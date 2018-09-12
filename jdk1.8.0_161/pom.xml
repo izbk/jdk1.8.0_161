@@ -8,6 +8,21 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
 		<java.version>1.8</java.version>
 	</properties>
+	<build>
+		<plugins>
+		    <!-- 编译插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <compilerVersion>${java.version}</compilerVersion>
+                </configuration>
+            </plugin>
+		</plugins>
+	</build>
 </project>
