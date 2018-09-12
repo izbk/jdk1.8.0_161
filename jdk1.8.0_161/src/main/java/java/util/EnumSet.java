@@ -99,18 +99,20 @@ public abstract class EnumSet<E extends Enum<E>> extends AbstractSet<E>
 
     /**
      * Creates an empty enum set with the specified element type.
-     *
+     *   
      * @param <E> The class of the elements in the set
      * @param elementType the class object of the element type for this enum
      *     set
      * @return An empty enum set of the specified type.
      * @throws NullPointerException if <tt>elementType</tt> is null
+     *   
      */
     public static <E extends Enum<E>> EnumSet<E> noneOf(Class<E> elementType) {
         Enum<?>[] universe = getUniverse(elementType);
         if (universe == null)
             throw new ClassCastException(elementType + " not an enum");
 
+        //根据元素个数不同，返回不同类型的子类
         if (universe.length <= 64)
             return new RegularEnumSet<>(elementType, universe);
         else

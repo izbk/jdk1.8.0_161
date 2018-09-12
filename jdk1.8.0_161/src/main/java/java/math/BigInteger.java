@@ -681,7 +681,7 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
      * Returns a positive BigInteger that is probably prime, with the
      * specified bitLength. The probability that a BigInteger returned
      * by this method is composite does not exceed 2<sup>-100</sup>.
-     *
+     *   返回素数的静态工厂方法
      * @param  bitLength bitLength of the returned BigInteger.
      * @param  rnd source of random bits used to select candidates to be
      *         tested for primality.
@@ -705,6 +705,7 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
      * larger bitlengths.
      *
      * This method assumes bitLength > 1.
+     *  返回素数的静态工厂方法
      */
     private static BigInteger smallPrime(int bitLength, int certainty, Random rnd) {
         int magLen = (bitLength + 31) >>> 5;
@@ -749,6 +750,7 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
      * This method is more appropriate for larger bitlengths since it uses
      * a sieve to eliminate most composites before using a more expensive
      * test.
+     *  返回素数的静态工厂方法
      */
     private static BigInteger largePrime(int bitLength, int certainty, Random rnd) {
         BigInteger p;
