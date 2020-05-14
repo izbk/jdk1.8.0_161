@@ -184,12 +184,15 @@ public class Semaphore implements java.io.Serializable {
             }
         }
 
+        @Override
         protected final boolean tryReleaseShared(int releases) {
             for (;;) {
                 int current = getState();
+                // 信号量的许可数 = 当前信号许可数 + 待释放的信号许可数
                 int next = current + releases;
                 if (next < current) // overflow
                     throw new Error("Maximum permit count exceeded");
+                // 设置可获取的信号许可数为next
                 if (compareAndSetState(current, next))
                     return true;
             }
@@ -225,6 +228,7 @@ public class Semaphore implements java.io.Serializable {
             super(permits);
         }
 
+        @Override
         protected int tryAcquireShared(int acquires) {
             return nonfairTryAcquireShared(acquires);
         }
@@ -240,12 +244,17 @@ public class Semaphore implements java.io.Serializable {
             super(permits);
         }
 
+        @Override
         protected int tryAcquireShared(int acquires) {
             for (;;) {
+                // 判断该线程是否位于CLH队列的列头
                 if (hasQueuedPredecessors())
                     return -1;
+                // 获取当前的信号量许可
                 int available = getState();
+                // 设置“获得acquires个信号量许可之后，剩余的信号量许可数”
                 int remaining = available - acquires;
+                // CAS设置信号量
                 if (remaining < 0 ||
                     compareAndSetState(available, remaining))
                     return remaining;

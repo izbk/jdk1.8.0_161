@@ -169,17 +169,31 @@ public class CountDownLatch {
             return getState();
         }
 
+        /**
+         * 重写父类方法
+         * @param acquires
+         * @return
+         */
         protected int tryAcquireShared(int acquires) {
             return (getState() == 0) ? 1 : -1;
         }
 
+        /**
+         * 重写父类方法
+         * @param releases
+         * @return
+         */
         protected boolean tryReleaseShared(int releases) {
             // Decrement count; signal when transition to zero
             for (;;) {
+                // 获取锁状态
                 int c = getState();
+                // c == 0 直接返回，释放锁成功
                 if (c == 0)
                     return false;
+                // 计算新“锁计数器”
                 int nextc = c-1;
+                // 更新锁状态（计数器）
                 if (compareAndSetState(c, nextc))
                     return nextc == 0;
             }

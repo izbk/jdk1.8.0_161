@@ -1,1 +1,9 @@
-/target/
+.classpath
+.settings/
+target/
+.project
+.idea/
+logs/
+test-output/
+*.iml
+LICENSEgit

@@ -173,6 +173,7 @@ public class CyclicBarrier {
     /**
      * Updates state on barrier trip and wakes up everyone.
      * Called only while holding lock.
+     * 唤醒所有线程，重置count，generation
      */
     private void nextGeneration() {
         // signal completion of last generation
@@ -198,27 +199,36 @@ public class CyclicBarrier {
     private int dowait(boolean timed, long nanos)
         throws InterruptedException, BrokenBarrierException,
                TimeoutException {
+        // 获取锁
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
+            // 分代
             final Generation g = generation;
 
+            // 当前generation“已损坏”，抛出BrokenBarrierException异常
+            // 抛出该异常一般都是某个线程在等待某个处于“断开”状态的CyclicBarrier
             if (g.broken)
                 throw new BrokenBarrierException();
 
+            // 如果线程中断，终止CyclicBarrier
             if (Thread.interrupted()) {
                 breakBarrier();
                 throw new InterruptedException();
             }
 
+            // 进来一个线程 count - 1
             int index = --count;
+            // count == 0 表示所有线程均已到位，触发Runnable任务
             if (index == 0) {  // tripped
                 boolean ranAction = false;
                 try {
                     final Runnable command = barrierCommand;
+                    // 触发任务
                     if (command != null)
                         command.run();
                     ranAction = true;
+                    // 唤醒所有等待线程，并更新generation
                     nextGeneration();
                     return 0;
                 } finally {
@@ -230,9 +240,11 @@ public class CyclicBarrier {
             // loop until tripped, broken, interrupted, or timed out
             for (;;) {
                 try {
+                    // 如果不是超时等待，则调用Condition.await()方法等待
                     if (!timed)
                         trip.await();
                     else if (nanos > 0L)
+                        // 超时等待，调用Condition.awaitNanos()方法等待
                         nanos = trip.awaitNanos(nanos);
                 } catch (InterruptedException ie) {
                     if (g == generation && ! g.broken) {
@@ -249,9 +261,11 @@ public class CyclicBarrier {
                 if (g.broken)
                     throw new BrokenBarrierException();
 
+                // generation已经更新，返回index
                 if (g != generation)
                     return index;
 
+                // “超时等待”，并且时间已到,终止CyclicBarrier，并抛出异常
                 if (timed && nanos <= 0L) {
                     breakBarrier();
                     throw new TimeoutException();
